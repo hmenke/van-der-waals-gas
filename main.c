@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 
         FILE* fp;
         if ((fp = fopen("Var.dat","w")) == NULL) return 1;
-	#pragma omp parallel for
+
 	for (int n = 1; n < maxN; n++) {
 		X.N = n;
 		printf("### N = %d ###\n", X.N);
