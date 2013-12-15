@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "simulation.h"
 #include "solver.h"
 #include "statistics.h"
@@ -21,6 +22,8 @@ int main(int argc, char *argv[]) {
 	double te = 14; // ?
 	int maxN = 100;
 	double *var = (double*) malloc(maxN * sizeof(double));
+	clock_t integration_time;
+	double *times = (double*) malloc(maxN * sizeof(double));
 
         FILE* fp;
         if ((fp = fopen("Var.dat","w")) == NULL) return 1;
@@ -44,16 +47,20 @@ int main(int argc, char *argv[]) {
 		printf("Setting up the simulation\n");
 		setup_simulation(q, p, X.N);
 
-		printf("Integrating differential equation\n");
+		printf("Integrating differential equation\t");
+		integration_time= clock();
 		for (int t = 0; t < X.steps-1; t++) {
 			velocity_verlet_step(q, p, t, &X);
 		}
+		integration_time = clock() - integration_time;
+		times[X.N-1] = ((double) integration_time)/CLOCKS_PER_SEC;
+		printf("%.2f seconds\n", times[X.N-1]);
 
 		printf("Calculating COM motion and kinetic energy\n");
 		centre_of_mass_motion(Q, q, &X);
 		kinetic_energy(EKin, p, &X);
-		var[X.N] = mean_kinetic_energy(EKin, te, &X);
-		fprintf( fp, "%d\t%e\n", X.N, var[X.N]);
+		var[X.N-1] = mean_kinetic_energy(EKin, te, &X);
+		fprintf(fp, "%d\t%e\t%e\n", X.N, var[X.N-1],times[X.N-1]);
 		fflush(fp);
 
 		if ( n == maxN-1 ) {
@@ -69,6 +76,7 @@ int main(int argc, char *argv[]) {
 	}
         fclose(fp);
 	free(var);
+	free(times);
 
 	return 0;
 }

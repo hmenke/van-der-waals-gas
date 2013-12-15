@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 --std=c99 -fopenmp
-LDFLAGS= -lm -fopenmp
+CFLAGS = -Wall -Wextra -O3 --std=c99
+LDFLAGS= -lm
 
 all: simulation.o solver.o statistics.o utils.o main.o
 	$(CC) $(LDFLAGS) -o StatMech simulation.o solver.o statistics.o utils.o main.o
