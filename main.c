@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 	int N_min = atoi(argv[1]);
 	int N_max = atoi(argv[2]);
 	double *var = (double*) malloc(N_max * sizeof(double));
-	clock_t integration_time;
+	time_t integration_time;
 	double *times = (double*) malloc(N_max * sizeof(double));
 
         FILE* fp;
@@ -53,14 +53,13 @@ int main(int argc, char *argv[]) {
 		setup_simulation(q, p, X.N);
 
 		printf("Integrating differential equation\n");
-		integration_time= clock();
+		integration_time = time(NULL);
 		for (int t = 0; t < X.steps-1; t++) {
 			printf("t = %.4f", t*X.dt);
 			velocity_verlet_step(q, p, t, &X);
 			printf("\n\033[F\033[J");
 		}
-		integration_time = clock() - integration_time;
-		times[X.N-1] = ((double) integration_time)/CLOCKS_PER_SEC;
+		times[X.N-1] = time(NULL) - integration_time;
 		printf("Total time taken: %.2f seconds\n", times[X.N-1]);
 
 		printf("Calculating COM motion and kinetic energy\n");
