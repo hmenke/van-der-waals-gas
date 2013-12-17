@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 	X.rho = 100;
 	X.N = 10; // default
 	X.tmax = 100;
-	X.steps = 1e6;
+	X.steps = 1e5;
 	X.dt = X.tmax*1.0/X.steps;
 
 	double te = 14; // ?
@@ -26,6 +26,19 @@ int main(int argc, char *argv[]) {
 	}
 	int N_min = atoi(argv[1]);
 	int N_max = atoi(argv[2]);
+
+	double **q = (double**) malloc(N_max * sizeof(double));
+	for (int i = 0; i < N_max; i++)
+		q[i] = (double*) malloc(X.steps * sizeof(double));
+
+	double **p = (double**) malloc(N_max * sizeof(double));
+	for (int i = 0; i < N_max; i++)
+		p[i] = (double*) malloc(X.steps * sizeof(double));
+
+	double *Q = (double*) malloc(X.steps * sizeof(double));
+
+	double *EKin = (double*) malloc(X.steps * sizeof(double));
+
 	double *var = (double*) malloc(N_max * sizeof(double));
 	time_t integration_time;
 	double *times = (double*) malloc(N_max * sizeof(double));
@@ -37,27 +50,13 @@ int main(int argc, char *argv[]) {
 		X.N = n;
 		printf("### N = %d ###\n", X.N);
 
-		double **q = (double**) malloc(X.N * sizeof(double));
-		for (int i = 0; i < X.N; i++)
-			q[i] = (double*) malloc(X.steps * sizeof(double));
-
-		double **p = (double**) malloc(X.N * sizeof(double));
-		for (int i = 0; i < X.N; i++)
-			p[i] = (double*) malloc(X.steps * sizeof(double));
-
-		double *Q = (double*) malloc(X.steps * sizeof(double));
-
-		double *EKin = (double*) malloc(X.steps * sizeof(double));
-
 		printf("Setting up the simulation\n");
 		setup_simulation(q, p, X.N);
 
 		printf("Integrating differential equation\n");
 		integration_time = time(NULL);
 		for (int t = 0; t < X.steps-1; t++) {
-			printf("t = %.4f", t*X.dt);
 			velocity_verlet_step(q, p, t, &X);
-			printf("\n\033[F\033[J");
 		}
 		times[X.N-1] = time(NULL) - integration_time;
 		printf("Total time taken: %.2f seconds\n", times[X.N-1]);
@@ -69,18 +68,19 @@ int main(int argc, char *argv[]) {
 		fprintf(fp, "%d\t%e\t%e\n", X.N, var[X.N-1],times[X.N-1]);
 		fflush(fp);
 
-		if ( n == N_max-1 ) {
+		if ( n == N_max ) {
 			printf("Writing results to disk\n");
 			write_single_pointer("Q.dat", Q, X.steps, X.dt);
 			write_single_pointer("EKin.dat", EKin, X.steps, X.dt);
 		}
-
-		free(q);
-		free(p);
-		free(Q);
-		free(EKin);
 	}
+
         fclose(fp);
+
+	free(q);
+	free(p);
+	free(Q);
+	free(EKin);
 	free(var);
 	free(times);
 
