@@ -20,12 +20,19 @@ int main(int argc, char *argv[]) {
 	X.dt = X.tmax*1.0/X.steps;
 
 	double te = 14; // ?
-	if ( argc != 3 ) {
-		printf("Too few arguments. 2 required, %d given\n", argc-1);
+	if ( argc != 4 ) {
+		printf("Too few arguments. 3 required, %d given\n", argc-1);
+		printf("Usage: %s {N_min} {N_max} {N_step}\n", argv[0]); 
 		return 1;
 	}
-	int N_min = atoi(argv[1]);
-	int N_max = atoi(argv[2]);
+	int N_min = abs(atoi(argv[1]));
+	int N_max = abs(atoi(argv[2]));
+	int N_step = abs(atoi(argv[3]));
+	if (N_min == 0) {
+		printf("You can't run the simulation for 0 particles\n");
+		printf("I'm going to ignore this and start at %d\n",N_step);
+		N_min = N_step;
+	}
 
 	double **q = (double**) malloc(N_max * sizeof(double));
 	for (int i = 0; i < N_max; i++)
@@ -46,7 +53,7 @@ int main(int argc, char *argv[]) {
         FILE* fp;
         if ((fp = fopen("Var.dat","w")) == NULL) return 1;
 
-	for (int n = N_min; n <= N_max; n++) {
+	for (int n = N_min; n <= N_max; n += N_step) {
 		X.N = n;
 		printf("### N = %d ###\n", X.N);
 
@@ -68,7 +75,7 @@ int main(int argc, char *argv[]) {
 		fprintf(fp, "%d\t%e\t%e\n", X.N, var[X.N-1],times[X.N-1]);
 		fflush(fp);
 
-		if ( n == N_max ) {
+		if ( n+N_step > N_max ) {
 			printf("Writing results to disk\n");
 			write_single_pointer("Q.dat", Q, X.steps, X.dt);
 			write_single_pointer("EKin.dat", EKin, X.steps, X.dt);
