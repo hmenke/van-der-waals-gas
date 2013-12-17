@@ -9,7 +9,7 @@ double compute_forces(double **q, int i, int t, simparams *X) {
 	double qi = q[i][t];
 	F = - X->n * X->gamma * pow(qi,X->n-1);
 	//#pragma omp parallel for reduction (+:F)
-	for (int j; j < X->N; j++) {
+	for (int j = 0; j < X->N; j++) {
 		F += ( 6 * X->lambda * X->rho * pow(qi - q[j][t],5) )/pow(1 + X->rho * pow(qi - q[j][t], 6), 2);
 	}
 	return F;

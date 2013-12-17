@@ -1,8 +1,13 @@
-CC = gcc
+OS = $(shell uname)
+ifeq ($(OS),Darwin)
+	CC = gcc-mp-4.8
+else
+	CC = gcc
+endif
 CFLAGS = -Wall -Wextra -O3 --std=c99 -fopenmp
 LDFLAGS= -lm -fopenmp
 
-all: simulation.o solver.o statistics.o utils.o main.o
+StatMech: simulation.o solver.o statistics.o utils.o main.o
 	$(CC) $(LDFLAGS) -o StatMech simulation.o solver.o statistics.o utils.o main.o
 
 simulation.o: simulation.c simulation.h
