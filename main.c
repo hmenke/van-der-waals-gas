@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 	X.rho = 100;
 	X.N = 10; // default
 	X.tmax = 100;
-	X.steps = 1e5;
+	X.steps = 1e6;
 	X.dt = X.tmax*1.0/X.steps;
 
 	double te = 14; // ?
@@ -75,11 +75,11 @@ int main(int argc, char *argv[]) {
 		fprintf(fp, "%d\t%e\t%e\n", X.N, var[X.N-1],times[X.N-1]);
 		fflush(fp);
 
-		if ( n+N_step > N_max ) {
-			printf("Writing results to disk\n");
-			write_single_pointer("Q.dat", Q, X.steps, X.dt);
-			write_single_pointer("EKin.dat", EKin, X.steps, X.dt);
-		}
+		//if ( n+N_step > N_max ) {
+		printf("Writing results to disk\n");
+		write_single_pointer("Q.dat", Q, X.steps, X.dt);
+		write_single_pointer("EKin.dat", EKin, X.steps, X.dt);
+		//}
 	}
 
         fclose(fp);

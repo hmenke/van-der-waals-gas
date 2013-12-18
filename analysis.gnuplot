@@ -1,8 +1,7 @@
 #!/usr/bin/env gnuplot
 
 reset
-set terminal pdfcairo color enhanced dashed
-set pointsize 0.5
+set terminal pdf color enhanced dashed
 set output "analysis.pdf"
 
 set multiplot layout 2,2

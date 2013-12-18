@@ -6,6 +6,9 @@ else
 endif
 CFLAGS = -Wall -Wextra -O3 --std=c99 -fopenmp
 LDFLAGS= -lm -fopenmp
+GNUPLOT = gnuplot
+
+all: StatMech analysis.pdf
 
 StatMech: simulation.o solver.o statistics.o utils.o main.o
 	$(CC) $(LDFLAGS) -o StatMech simulation.o solver.o statistics.o utils.o main.o
@@ -24,6 +27,9 @@ utils.o: utils.c utils.h
 
 main.o: main.c
 	$(CC) -c $(CFLAGS) -o main.o main.c
+
+analysis.pdf: analysis.gnuplot
+	$(GNUPLOT) analysis.gnuplot
 
 .PHONY : clean
 clean:
